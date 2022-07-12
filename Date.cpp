@@ -80,6 +80,17 @@ public:
 		return os;
 	}
 
+	std::istream& operator >>( std::istream& is, Date &d)
+	{
+		int x, y, z;
+		is >> x >> y >> z;
+		d.day( x );
+		d.month( y );
+		d.year( z );
+
+		return is;
+	}
+
 	//implementar +=
 
 private:
