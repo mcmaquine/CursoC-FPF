@@ -4,45 +4,50 @@
 class Date
 {
 public:
-	Date();
-	Date(int day, int month, int year); // @suppress("Class members should be properly initialized")
-	Date( Date const &other );
+    Date();
+    Date(int day, int month, int year);
+    Date(Date const &other);
 
-	int day() const { return _dy; }
-	int month() const { return _mo; }
-	int year() const { return _yr;}
+    int day() const { return _dy; };
+    int month() const { return _mo; }
+    int year() const { return _yr; }
 
-	void day( int day);
-	void month( int month );
-	void year( int year);
+    void day(int dy);
+    void month(int mo);
+    void year(int yr);
 
-	bool isLeapYear();
+    Date& operator =(Date const &other);
 
-	Date& operator =(Date const &other );
+    bool operator ==(Date const &other) const;
 
-	bool operator ==( Date const &other) const;
+    bool operator !=(Date const &other) const;
 
-	bool operator <( Date const &other) const;
+    bool operator <(Date const &other) const;
 
-	Date& operator ++();
+    bool operator >=(Date const &other) const;
 
-	Date operator ++(int dummy);
+    bool operator >(Date const &other) const;
 
-	Date& operator --();
+    bool operator <=(Date const &other) const;
 
-	Date operator --( int dummy );
+    Date& operator ++();
 
-	void write(std::ostream &o) const;
+    Date operator ++(int dummy);
 
-	void read( std::istream &a);
+    Date& operator --();
+
+    Date operator --(int dummy);
+
+    void write(std::ostream &o) const;
+
+    void read(std::istream &a);
+
+protected:
+    int _dy, _mo, _yr;
 
 private:
-
-	void _add_day(int days);
-	void _add_month( int months);
-
-	int _dy, _mo, _yr;
-	int _modays[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    void day_up();
+    void day_down();
 };
 
 std::ostream& operator <<(std::ostream &o, Date const &date);

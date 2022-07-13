@@ -7,136 +7,184 @@
 #include <iostream>
 #include "date.h"
 
-Date::Date() : _dy(1), _mo(1), _yr(1) { }
-Date::Date(int dy, int mo, int yr)
+using namespace std;
+
+static int __month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+static int __leap_factor(int m, int y)
 {
-	year(yr);
-	month(mo);
-	day(dy);
+    return m == 2 && ((y % 4) == 0);
 }
 
-Date::Date( Date const &other) : _dy(other._dy), _mo(other._mo), _yr(other._yr)
-{ }
-
-void Date::day( int day )
+static bool inline __day_exceed(int d, int m, int y)
 {
-	if( isLeapYear() && _mo == 2 && day > 1 && day < 30)
-		_dy = day;
-	else if ( day > 0 && day <= _modays[_mo - 1])
-		_dy = day;
-	else
-		_dy = 1;
+    return d > (__month_days[m - 1] + __leap_factor(m, y));
 }
 
-void Date::month ( int month )
+static bool inline __is_valid_day(int d, int m, int y)
 {
-	if( month > 0 && month < 13)
-		_mo = month;
-	else
-		_mo = 1;
+    return d > 0 && !__day_exceed(d, m, y);
 }
 
-void Date::year ( int year )
+static bool inline __is_valid_month(int m)
 {
-	if( year != 0)
-		_yr = year;
-	else
-		_yr = 1990;
+    return m > 0 && m < 13;
 }
 
-bool Date::isLeapYear()
+static bool __is_valid(int d, int m, int y)
 {
-	return ( _yr % 400 == 0 || ( _yr % 4 == 0 && ( _yr % 100 != 0 )) );
+    return y > 0 && __is_valid_month(m) && __is_valid_day(d, m, y);
 }
 
-void Date::_add_day( int days )
+Date::Date() : _dy(1), _mo(1), _yr(1)
 {
-	int diff = 0;
+}
 
-	if( isLeapYear() )
-	{
+Date::Date(int day, int month, int year) : _dy(day), _mo(month), _yr(year)
+{
+    if (!__is_valid(day, month, year))
+    {
+        _dy = _mo = _yr = 1;
+    }
+}
 
-	}else
-	{
+Date::Date(Date const &other) : _dy(other._dy), _mo(other._mo), _yr(other._yr)
+{
+}
 
-	}
+void Date::day(int dy)
+{
+    if (__is_valid_day(dy, _mo, _yr + 1))
+    {
+        _dy = dy;
+    }
+}
 
-	if( diff <= 0 )
-	{
+void Date::month(int mo)
+{
+    if (__is_valid_month(mo))
+    {
+        _mo = mo;
+    }
+}
 
-	}
+void Date::year(int yr)
+{
+    if (yr > 0)
+    {
+        _yr = yr;
+    }
 }
 
 Date& Date::operator =(Date const &other)
 {
-	_dy = other._dy;
-	_mo = other._mo;
-	_yr = other._yr;
-	return *this;
+    _dy = other._dy, _mo = other._mo, _yr = other._yr;
+    return *this;
 }
 
-bool Date::operator ==( Date const &other) const
+bool Date::operator ==(Date const &other) const
 {
-	return _dy == other._dy && _mo == other._mo && _yr == other._yr;
+    return _dy == other._dy && _mo == other._mo && _yr == other._yr;
+}
+
+bool Date::operator !=(Date const &other) const
+{
+    return !operator ==(other);
 }
 
 bool Date::operator <(Date const &other) const
 {
-	return _yr < other._yr ||
-			(( _yr == other._yr && _mo < other._mo ) ||
-			( _mo == other._mo && _dy < other._dy));
+    return _yr < other._yr ||
+          (_yr == other._yr && (_mo < other._mo ||
+                               (_mo == other._mo && _dy < other._dy)));
+}
+
+bool Date::operator >=(Date const &other) const
+{
+    return !operator <(other);
+}
+
+bool Date::operator >(Date const &other) const
+{
+    return _yr > other._yr ||
+          (_yr == other._yr && (_mo > other._mo ||
+                               (_mo == other._mo && _dy > other._dy)));
+}
+
+bool Date::operator <=(Date const &other) const
+{
+    return !operator >(other);
 }
 
 Date& Date::operator ++()
 {
-	_dy++;
-	return *this;
+    day_up();
+    return *this;
 }
 
-Date Date::operator ++( int dummy )
+Date Date::operator ++(int dummy)
 {
-	Date d(*this);
-	++_dy;
-	return d;
+    Date d(*this);
+    day_up();
+    return d;
+}
+
+void Date::day_up()
+{
+    if (__day_exceed(++_dy, _mo, _yr))
+    {
+        _dy = 1;
+        (++_mo) > 12 && (_mo = 1, ++_yr);
+    }
 }
 
 Date& Date::operator --()
 {
-	--_dy;
-	return *this;
+    day_down();
+    return *this;
 }
 
-Date Date::operator --( int dummy )
+Date Date::operator --(int dummy)
 {
-	Date d(*this);
-	--_dy;
-	return d;
+    Date d(*this);
+    day_down();
+    return d;
 }
 
-void Date::read ( std::istream &a )
+void Date::day_down()
 {
-	a >> _dy >> _mo >> _yr;
+    if (--_dy < 1)
+    {
+        (--_mo) > 0 || ((_mo = 12) && --_yr);
+        _dy = __month_days[_mo - 1] + __leap_factor(_mo, _yr);
+    }
 }
 
-void Date::write ( std::ostream &o) const
+void Date::write(ostream &o) const
 {
-	o << _dy << "/" << _mo << "/" << _yr;
+    o << _dy << "/" << _mo << "/" << _yr;
 }
 
-std::ostream& operator <<(std::ostream& os, Date const &d)
+void Date::read(istream &a)
 {
-	os << d.day() << '/' << d.month() << '/' << d.year();
-	return os;
+    int d, m, y;
+    a >> d >> m >> y;
+    if (__is_valid(d, m, y))
+    {
+        _dy = d, _mo = m, _yr = y;
+    }
 }
 
-std::istream& operator >>( std::istream& is, Date &d)
+ostream& operator <<(ostream &o, Date const &date)
 {
-	int x, y, z;
-	is >> x >> y >> z;
-	d.day( x );
-	d.month( y );
-	d.year( z );
-
-	return is;
+    date.write(o);
+    return o;
 }
+
+istream& operator >>(istream &a, Date &date)
+{
+    date.read(a);
+    return a;
+}
+
 	//implementar +=
