@@ -5,7 +5,8 @@
  *      Author: maquine
  */
 #include <iostream>
-#include "Date.cpp"
+
+#include "date.h"
 
 using namespace std;
 
@@ -20,13 +21,13 @@ void troca( T &a, T &b)
 
 int main(int argc, char **argv)
 {
-	int year = 2022;
-	Date d(1,1,year);
+	int year = 2024;
+	Date d(28,2,year);
 
-	if( d.bissexto() )
-		std::cout << year << " eh bissexto";
+	if( d.isLeapYear() )
+		std::cout << d << " eh bissexto";
 	else
-		std::cout << year << " nao eh bissexto";
+		std::cout << d << " nao eh bissexto";
 
 	return 0;
 }
