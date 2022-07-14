@@ -16,6 +16,8 @@ public:
     void month(int mo);
     void year(int yr);
 
+    bool is_leap_year();
+
     Date& operator =(Date const &other);
 
     bool operator ==(Date const &other) const;
@@ -37,6 +39,10 @@ public:
     Date& operator --();
 
     Date operator --(int dummy);
+
+    Date& operator +=(int days);
+
+    Date& operator -=(int days);
 
     void write(std::ostream &o) const;
 

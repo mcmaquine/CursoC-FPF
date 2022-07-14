@@ -21,6 +21,14 @@ public:
 
     bool operator ==(DateTime const &other) const;
 
+    bool operator >(DateTime const &other) const;
+
+    bool operator >=(DateTime const & other) const;
+
+    bool operator <(DateTime const & other) const;
+
+    bool operator <=(DateTime const &other) const;
+
     void write(std::ostream &o) const;
 
     void read(std::istream &a);

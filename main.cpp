@@ -24,10 +24,14 @@ int main(int argc, char **argv)
 	int year = 2024;
 	Date d(28,2,year);
 
-	if( d.isLeapYear() )
+	if( d.is_leap_year() )
 		std::cout << d << " eh bissexto";
 	else
 		std::cout << d << " nao eh bissexto";
+
+	d += 2;
+
+	std::cout << std::endl << d;
 
 	return 0;
 }

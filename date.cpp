@@ -76,6 +76,11 @@ void Date::year(int yr)
     }
 }
 
+bool Date::is_leap_year()
+{
+	return _yr % 400 == 0 || ( _yr % 4 == 0 && _yr % 100 != 0 );
+}
+
 Date& Date::operator =(Date const &other)
 {
     _dy = other._dy, _mo = other._mo, _yr = other._yr;
@@ -127,6 +132,24 @@ Date Date::operator ++(int dummy)
     Date d(*this);
     day_up();
     return d;
+}
+
+Date& Date::operator +=( int days ){
+	for( int i = 0; i < days; i++)
+	{
+		day_up();
+	}
+
+	return *this;
+}
+
+Date& Date::operator -=( int days )
+{
+	for( int i = 0; i < days; i++){
+		day_down();
+	}
+
+	return *this;
 }
 
 void Date::day_up()

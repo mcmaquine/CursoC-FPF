@@ -44,6 +44,32 @@ bool DateTime::operator ==(DateTime const &other) const
         _hr == other._hr && _mi == other._mi && _se == other._se;
 }
 
+bool DateTime::operator >(DateTime const &other) const
+{
+	return Date::operator >=(other) ||
+		(_hr > other._hr ||
+		(_hr == other._hr && (_mi > other._mi ||
+		(_mi == other._mi && _se > other._se))));
+}
+
+bool DateTime::operator <(DateTime const &other) const
+{
+	return Date::operator <=(other) ||
+			(_yr < other._yr ||
+			(_yr == other._yr && (_mo < other._mo ||
+			(_mo == other._mo && _dy < other._dy))));
+}
+
+bool DateTime::operator >=(DateTime const &other) const
+{
+	return !DateTime::operator <(other);
+}
+
+bool DateTime::operator <=(DateTime const &other) const
+{
+	return !DateTime::operator >(other);
+}
+
 void DateTime::write(std::ostream &o) const
 {
     o << _dy << "-" << _mo << "-" << _yr;
